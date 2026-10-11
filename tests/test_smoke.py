@@ -11,4 +11,4 @@ def test_store_opens_with_an_empty_cart(page):
 
     expect(catalog.results_summary).to_be_visible()
     # A new browser context has no saved order, so the cart starts empty.
-    expect(Header(page).cart_link).to_have_accessible_name("View cart")
+    Header(page).expect_cart_count(0)
