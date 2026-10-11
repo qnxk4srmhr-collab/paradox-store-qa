@@ -38,3 +38,10 @@ class CatalogPage:
         # even if the list re-renders or changes order.
         sku = cards_with_button.first.get_attribute("data-testid")
         return ProductCard(self.page.get_by_test_id(sku))
+
+    def add_first_available_product_to_cart(self):
+        """Add the first product that has an Add to cart button, and return its name."""
+        card = self.first_card_with_add_to_cart()
+        product_name = card.title.inner_text()
+        card.add_to_cart()
+        return product_name
