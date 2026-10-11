@@ -19,7 +19,12 @@ def test_cart01_summary_adds_up_and_checkout_is_available(page):
     catalog.open_all_games()
     header.expect_cart_count(1)  # wait until the new page has loaded the existing cart
     full_price_item = catalog.add_first_available_product_to_cart(full_price_only=True)
-    header.expect_cart_count(2)
+    header.expect_cart_count(
+        2,
+        "The cart doesn't have both items after opening a second page and adding another. "
+        "Known intermittent store issue BUG-09: the store can delete an existing cart line "
+        "while the new page is still loading the cart.",
+    )
 
     cart.open()
     sale_line = cart.line(sale_item)
