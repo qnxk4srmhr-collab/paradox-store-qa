@@ -14,6 +14,7 @@
 | BUG-06 | All tile "Add to cart" buttons share the same accessible name | Accessibility | Low |
 | BUG-07 | No warning when cart items overlap (season pass plus included add-on) | UX | Low |
 | BUG-08 | Minor polish issues | Polish | Trivial |
+| BUG-09 | Suspected: cart can silently lose an item after opening another page | Bug / Data loss | High if confirmed |
 
 ---
 
@@ -141,6 +142,42 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 - **Cart page title:** the browser tab shows only "Paradox Interactive". Every other page uses "`<Page> - Paradox Interactive`" (for example "All games - Paradox Interactive"). Unhelpful for tabs, history and screen readers.
 - **Inconsistent filter label:** the "Expansion" quick filter's label is "expansion" in lowercase in the page markup, unlike "DLC" and "Full Game". It looks fine on screen (CSS shows it in capitals), but screen readers and analytics get the lowercase text.
 - **Trailing space in product data:** the base game's product card data has the title "Europa Universalis IV " with a trailing space (seen in the card's analytics attributes). Not visible on screen, but it can break exact-match lookups and reports.
+
+---
+
+## BUG-09: Suspected: cart can silently lose an item after opening another page
+**Status:** suspected, intermittent. Found by the automated CART-01 test. Reproduced only by automation: once in a normal run of the test suite, and 2 times in 9 diagnostic runs that clicked straight after the page opened. Not reproduced manually in Safari or Chromium; human clicks are probably too slow to hit the timing window.
+**Severity:** High if confirmed. A shopper who opens another page and adds a second item can lose the first one without any message. Direct revenue risk.
+**Environment:** found without VPN (prices in EUR), Playwright's Chromium, desktop 1366x850.
+
+**Steps to reproduce**
+1. In a fresh browser session, open the browser's developer tools on the Network tab and filter on `commercelayer`.
+2. Open `/our-games/on-sale`, hover over a product card and click **Add to cart**. The header shows 1.
+3. Open `/our-games/all-games`.
+4. As soon as the product tiles appear, hover over another product's card and click **Add to cart**.
+5. Open the cart.
+
+**Expected:** both items are in the cart and the header shows 2.
+
+**Actual (intermittent):** while All games is loading, the store sends a `DELETE /api/line_items/<id>` for the existing item, although nobody removed it. The header drops to "View cart" (empty). The next Add to cart creates a **new order** (`POST /api/orders`, new `orderId` in localStorage) containing only the second item. The first item is gone, with no message.
+
+**Evidence:** network log from a failing run, captured in a Playwright trace (times in seconds):
+```
+36.18 POST   /api/orders                       first add creates the order
+36.61 POST   /api/line_items                   first item added, header shows 1
+37.60 GET    /api/orders/JZYhoWjWOe            cart loaded
+38.08 GET    /api/orders/JZYhoWjWOe            All games starts loading
+38.19 DELETE /api/line_items/bmetDBqAZn  204   first item deleted, not requested by the user
+38.99 POST   /api/orders                       a new order is created
+39.31 POST   /api/line_items                   second item goes into the new order
+39.50 DELETE /api/line_items/bmetDBqAZn  404   the same line deleted again, already gone
+```
+
+**Notes:**
+- The repeated DELETE of a line that's already gone (404) suggests the store's own clean-up code runs twice, which points to a race between loading the existing cart and the new page starting up. The page also fetches the order several times on load in failing runs.
+- Not seen when the page is left idle after opening it (0 of 3 runs), so the trigger seems to be interacting with the page while it's still loading the cart.
+- Worth retesting with network throttling, which should widen the timing window.
+- The CART-01 automated test fails with a message naming BUG-09 when this happens. It deliberately has no retry or workaround.
 
 ---
 

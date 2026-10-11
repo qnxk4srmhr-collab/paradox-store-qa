@@ -22,8 +22,8 @@ def test_cart01_summary_adds_up_and_checkout_is_available(page):
     header.expect_cart_count(
         2,
         "The cart doesn't have both items after opening a second page and adding another. "
-        "Known intermittent store issue BUG-09: the store can delete an existing cart line "
-        "while the new page is still loading the cart.",
+        "Possible intermittent store issue BUG-09 (suspected, see BUGS.md): the store may delete "
+        "an existing cart line while the new page is still loading the cart.",
     )
 
     cart.open()
