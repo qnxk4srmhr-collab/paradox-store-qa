@@ -26,6 +26,7 @@ class CartPage:
     def __init__(self, page):
         self.page = page
         self.main = page.get_by_role("main")
+        self.continue_shopping_link = self.main.get_by_role("link", name="Continue shopping")
         # One list item per product in the cart.
         self.lines = self.main.get_by_role("listitem")
         self.summary_heading = self.main.get_by_role("heading", name="Summary")

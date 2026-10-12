@@ -11,6 +11,9 @@ class Header:
         # "View cart", "View cart, 1 item", "View cart, 2 items".
         self.cart_link = page.get_by_role("link", name=re.compile(r"^View cart"))
 
+    def open_cart(self):
+        self.cart_link.click()
+
     def expect_cart_count(self, count, message=None):
         """Check the header cart link reports `count` items (0 means an empty cart).
 
