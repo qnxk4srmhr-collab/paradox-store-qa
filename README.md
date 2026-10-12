@@ -16,7 +16,7 @@ Automation built with help from Claude Code; exploration, test design and bug re
 You need **Python 3.10 or newer** and git.
 
 ```bash
-git clone <this repository's URL>
+git clone https://github.com/qnxk4srmhr-collab/paradox-store-qa.git
 cd paradox-store-qa
 python3 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
