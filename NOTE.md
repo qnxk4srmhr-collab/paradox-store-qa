@@ -3,6 +3,8 @@
 Gerry, QA take-home for Paradox Tinto, 11–12 October 2026.
 Details are in [TEST_CASES.md](TEST_CASES.md) (test scenarios), [BUGS.md](BUGS.md) (bug reports) and [README.md](README.md) (automation: setup, how to run, design decisions).
 
+**Automation in short:** 7 Playwright tests (Python, pytest) covering the 5 required flows plus a brand filter test, with page objects, an HTML report with screenshots, and traces on failure. A GitHub Actions workflow runs the suite on a clean machine, started by hand only because it uses the live store, and has passed there.
+
 ## Assumptions
 
 - **Scope:** the public store under `/our-games` (listings, product and buy pages, cart), used as a **guest**. No accounts, no login.
