@@ -1,4 +1,7 @@
+import base64
+
 import pytest
+import pytest_html
 
 from utils.age_gate import pass_age_gate_when_shown
 from utils.cookie_banner import decline_cookies, decline_cookies_when_shown
@@ -52,3 +55,18 @@ def handle_popups(page):
     """
     decline_cookies_when_shown(page)
     pass_age_gate_when_shown(page)
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """When a test fails, add a screenshot of the page to the HTML report.
+
+    pytest calls this after each stage of a test. We only act on the test body
+    ("call") when it failed; at that point the browser page is still open.
+    """
+    outcome = yield
+    report = outcome.get_result()
+    page = item.funcargs.get("page")
+    if report.when == "call" and report.failed and page is not None:
+        screenshot = base64.b64encode(page.screenshot()).decode()
+        report.extras = getattr(report, "extras", []) + [pytest_html.extras.png(screenshot)]
