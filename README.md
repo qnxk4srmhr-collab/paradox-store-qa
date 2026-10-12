@@ -4,6 +4,7 @@ Take-home for the Experienced QA Analyst role at Paradox Tinto. The system under
 
 | File | What it is |
 |---|---|
+| [NOTE.md](NOTE.md) | Short note: assumptions, what I'd test next, bugs found |
 | [TEST_CASES.md](TEST_CASES.md) | Test cases, prioritised by risk, each marked Core / Stretch / Manual for automation |
 | [BUGS.md](BUGS.md) | Bugs and UX issues found, with steps, expected and actual results |
 | [evidence/](evidence/) | Screenshots and a Playwright trace backing up the bug reports |

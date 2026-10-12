@@ -1,7 +1,7 @@
-# Bugs and UX issues found while exploring
+# Bugs and UX issues found
 
 **Environment:** https://www.paradoxinteractive.com/our-games (live production), guest user, English and Chinese (beta) store languages, Chromium-based browser on macOS, locale en-US
-**Date:** 11 October 2026
+**Date:** 11–12 October 2026 (BUG-09 and BUG-10 were found while building the automation)
 **Viewports:** desktop 1366x850, narrow ~580 px
 
 | ID | Title | Type | Severity |
