@@ -2,7 +2,7 @@
 
 **System under test:** https://www.paradoxinteractive.com/our-games (live production)
 **User:** guest (no account, no login)
-**Explored on:** 11 October 2026, desktop viewport 1366x850 and narrow viewport (~580 px), locale en-US, connected through a VPN (which is why prices were shown in GBP)
+**Explored on:** 11 October 2026, desktop viewport 1366x850 and narrow viewport (~580 px), locale en-US
 
 ## Approach
 
@@ -420,7 +420,7 @@
 Two untranslated string keys turned up in one short session: `toast.invalid_voucher` (BUG-02) and `General.ageGate.sorry` (BUG-03). A cheap automated check could trigger the main messages (toasts, errors, age gate) in every store language and fail if any visible text looks like a string key, such as `word.word_word`.
 
 ### Region, currency and VPN use
-The store appears to set the currency from the visitor's location (my exploration ran through a VPN, hence GBP). I'd run the cart tests from a few regions, using a VPN or a Playwright proxy per region, and add two cases:
+The store appears to set the currency from the visitor's location. I'd run the cart tests from a few regions, using a VPN or a Playwright proxy per region, and add two cases:
 
 **Switching region mid-session keeps the cart consistent** (Medium: VPN use is common among PC players, and a mixed currency means wrong totals)
 1. With region A active, add an item and note the currency and total.

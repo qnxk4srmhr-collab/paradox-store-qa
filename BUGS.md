@@ -1,6 +1,6 @@
 # Bugs and UX issues found while exploring
 
-**Environment:** https://www.paradoxinteractive.com/our-games (live production), guest user, English and Chinese (beta) store languages, Chromium-based browser on macOS, locale en-US, connected through a VPN (prices shown in GBP)
+**Environment:** https://www.paradoxinteractive.com/our-games (live production), guest user, English and Chinese (beta) store languages, Chromium-based browser on macOS, locale en-US
 **Date:** 11 October 2026
 **Viewports:** desktop 1366x850, narrow ~580 px
 
@@ -56,6 +56,9 @@ The same raw key appears as the toast title with the store set to **Chinese (bet
 
 The field is also cleared, so the player has to retype the whole code to fix a typo.
 
+![Cart page after submitting an invalid promo code: the toast title reads "toast.invalid_voucher" and the promo code field is empty again](evidence/BUG-02-invalid-promo-code-raw-key.png)
+*The toast with the raw key `toast.invalid_voucher` (outlined in red). The promo code field has already been cleared.*
+
 **Evidence:** the server rejects the code as expected. `PATCH https://paradox.commercelayer.io/api/orders/<id>` with `coupon_code` returns **422** with `"detail": "coupon_code - doesn't exist"`. The problem is in how the front end displays the error.
 
 **Notes:**
@@ -77,6 +80,9 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 **Expected:** a clear, translated message explaining that the visitor doesn't meet the age requirement.
 
 **Actual:** the message shows the raw string key `General.ageGate.sorry`.
+
+![Age gate refusal on the Vampire: The Masquerade - Bloodlines 2 Loose Cannon page: the only message is "General.ageGate.sorry", with "Go to all games" and "Try again" buttons](evidence/BUG-03-age-gate-raw-key.png)
+*The age gate refusal on an age-restricted product page (Bloodlines 2 – Loose Cannon), showing the raw key `General.ageGate.sorry` (outlined in red).*
 
 **Notes:** this is the second raw key found (see BUG-02, `toast.invalid_voucher`). Two missing strings in a short session suggest a wider gap in the localization pipeline, rather than one-off mistakes. A cheap automated check for this is listed under "What I'd test next" in TEST_CASES.md.
 
@@ -148,7 +154,7 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 ## BUG-09: Suspected: cart can silently lose an item after opening another page
 **Status:** suspected, intermittent. Found by the automated CART-01 test. Reproduced only by automation: once in a normal run of the test suite, and 2 times in 9 diagnostic runs that clicked straight after the page opened. Not reproduced manually in Safari or Chromium; human clicks are probably too slow to hit the timing window.
 **Severity:** High if confirmed. A shopper who opens another page and adds a second item can lose the first one without any message. Direct revenue risk.
-**Environment:** found without VPN (prices in EUR), Playwright's Chromium, desktop 1366x850.
+**Environment:** Playwright's Chromium, desktop 1366x850.
 
 **Steps to reproduce**
 1. In a fresh browser session, open the browser's developer tools on the Network tab and filter on `commercelayer`.
@@ -161,7 +167,7 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 
 **Actual (intermittent):** while All games is loading, the store sends a `DELETE /api/line_items/<id>` for the existing item, although nobody removed it. The header drops to "View cart" (empty). The next Add to cart creates a **new order** (`POST /api/orders`, new `orderId` in localStorage) containing only the second item. The first item is gone, with no message.
 
-**Evidence:** network log from a failing run, captured in a Playwright trace (times in seconds):
+**Evidence:** Playwright trace of a failing run: [`evidence/BUG-09-trace.zip`](evidence/BUG-09-trace.zip). It holds screenshots, the actions taken and every network call. Open it with `playwright show-trace evidence/BUG-09-trace.zip` (or drag it onto trace.playwright.dev), then look at the Network tab. Contains no personal data; the guest cart tokens in it have expired. Key network calls (times in seconds):
 ```
 36.18 POST   /api/orders                       first add creates the order
 36.61 POST   /api/line_items                   first item added, header shows 1
@@ -178,9 +184,3 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 - Not seen when the page is left idle after opening it (0 of 3 runs), so the trigger seems to be interacting with the page while it's still loading the cart.
 - Worth retesting with network throttling, which should widen the timing window.
 - The CART-01 automated test fails with a message naming BUG-09 when this happens. It deliberately has no retry or workaround.
-
----
-
-## Note on currency
-
-- All prices were shown in **GBP** because I explored through a VPN; the store appears to set the currency from the visitor's location. The automated tests read the currency from the page instead of assuming one. Testing across regions (including switching region mid-session) is listed under "What I'd test next" in TEST_CASES.md.
