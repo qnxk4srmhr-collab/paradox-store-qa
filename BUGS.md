@@ -15,6 +15,7 @@
 | BUG-07 | No warning when cart items overlap (season pass plus included add-on) | UX | Low |
 | BUG-08 | Minor polish issues | Polish | Trivial |
 | BUG-09 | Suspected: cart can silently lose an item after opening another page | Bug / Data loss | High if confirmed |
+| BUG-10 | Removing a creator referral code shows a raw localization key | Bug / Localization | Low |
 
 ---
 
@@ -67,6 +68,9 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 - **No Apply button:** pressing Enter is the only way to submit a code, and nothing on the page says so.
 - **Label:** the field label is "Promo Code*". The asterisk usually means "required", which this field isn't.
 - **To check:** whether the toast is announced to screen readers.
+- **Cause (from the store's own translation data):** the English title exists, as `Cart.toast.invalid_voucher` = "Invalid voucher". The page asks for it under a different path, gets nothing, and shows the key instead. So the fix is in the lookup, not in the translation files.
+- **Hardcoded label:** the field's "Promo Code" label is written directly in the page's script instead of coming from the translation files, so it stays in English in every store language.
+- The success toasts use the same "voucher" wording: "Added voucher to cart", "Removed voucher from cart".
 
 ---
 
@@ -85,6 +89,8 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 *The age gate refusal on an age-restricted product page (Bloodlines 2 – Loose Cannon), showing the raw key `General.ageGate.sorry` (outlined in red).*
 
 **Notes:** this is the second raw key found (see BUG-02, `toast.invalid_voucher`). Two missing strings in a short session suggest a wider gap in the localization pipeline, rather than one-off mistakes. A cheap automated check for this is listed under "What I'd test next" in TEST_CASES.md.
+
+**Cause (from the store's own translation data):** the age gate's English translations contain `day`, `enter_birth_date` and `we_need_your_age`, but no `sorry`, so the refusal message has nothing to display except its key.
 
 ---
 
@@ -184,3 +190,30 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 - Not seen when the page is left idle after opening it (0 of 3 runs), so the trigger seems to be interacting with the page while it's still loading the cart.
 - Worth retesting with network throttling, which should widen the timing window.
 - The CART-01 automated test fails with a message naming BUG-09 when this happens. It deliberately has no retry or workaround.
+
+---
+
+## BUG-10: Removing a creator referral code shows a raw localization key
+**Severity:** Low. Only shoppers who arrive through a content creator's referral link see the referral banner, but it's paid partner traffic, and it's the third raw key on the store (see BUG-02 and BUG-03).
+
+**How it was found:** by comparing the translation keys the cart's script uses with the translation data the store sends to the browser, then confirmed on screen.
+
+**Steps to reproduce**
+1. In a private browser window, add any item to the cart and open `/our-games/cart`.
+2. Simulate arriving through a creator's referral link. Those links set a cookie named `irclickid` (impact.com affiliate tracking). In the browser console run `document.cookie = "irclickid=qa-test; path=/"`, then reload the cart.
+3. A **"Creator Referral Activated"** banner appears in the summary. Remove it.
+
+**Expected:** a translated confirmation, such as "Removed referral code".
+
+**Actual:** the toast shows the raw key `removed_referal_code`.
+
+![Cart page after removing the creator referral banner: the toast reads "removed_referal_code"](evidence/BUG-10-referral-code-removed-raw-key.png)
+*The toast after removing the referral banner, showing the raw key `removed_referal_code` (outlined in red).*
+
+**Cause (from the cart's script and translation data):** the script asks for `removed_referal_code` (one "r"), while the translation file has `Cart.toast.removed_refferal_code` (double "f") with the text "Removed referral code". Neither matches the other, nor the correct spelling "referral".
+
+**Notes:**
+- The banner itself shows only "Creator Referral Activated", which is written directly in the script, so it's never translated.
+- The banner's remove control asks for a label key, `remove_referral_code`, that doesn't exist in the translation data at all. No text is visible for it, so it's probably used as the button's hidden label. **To check:** what a screen reader announces for that button.
+- Three spellings of "referral" across the code and translations (referral, referal, refferal) suggest keys typed by hand. A build-time check that every key used in the code exists in the translation files would catch this whole class of bug (see also "What I'd test next" in TEST_CASES.md).
+- Triggering the banner by hand sends a made-up affiliate click ID to the store. Without a purchase nothing is credited, but it's worth agreeing with the team before doing this on production.
