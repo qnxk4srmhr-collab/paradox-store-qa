@@ -1,0 +1,54 @@
+# Runs the test suite on a clean GitHub-hosted machine.
+#
+# Manual trigger only: the tests run against the live Paradox store, so they must
+# never run automatically (not on push, not on pull requests, not on a schedule).
+# Start a run from the repository's Actions tab: "Store tests" > "Run workflow".
+
+name: Store tests
+
+on:
+  workflow_dispatch:
+
+# Never run two at once, even if "Run workflow" is clicked twice.
+concurrency:
+  group: store-tests
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Install Chromium and the system libraries it needs
+        run: playwright install --with-deps chromium
+
+      # Same settings as a local run (from pytest.ini): one test at a time, no retries,
+      # HTML report in reports/, traces of failed tests in test-results/.
+      - name: Run the tests
+        run: pytest -v
+
+      # One download holding both folders, so the report's "Trace" links
+      # (which point to ../test-results/...) still work after unzipping.
+      # "if: always()" uploads even when tests fail, which is when it matters most.
+      - name: Upload the HTML report and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: |
+            reports/
+            test-results/
+          if-no-files-found: ignore

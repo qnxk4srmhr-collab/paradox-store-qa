@@ -54,6 +54,12 @@ playwright show-trace test-results/<test name>/trace.zip
 
 Passed tests keep no trace, to save space. `reports/` and `test-results/` are git-ignored.
 
+### Running in GitHub Actions (CI)
+
+The workflow in [.github/workflows/tests.yml](.github/workflows/tests.yml) runs the same suite on a clean GitHub-hosted Linux machine, following the setup steps above.
+
+It **only runs when started by hand**, never on push or on a schedule, because the tests use the live store. To start it: open the repository's **Actions** tab, choose **Store tests**, then **Run workflow**. When it finishes, download the **test-report** artifact from the run's page. It holds `reports/report.html` and, for failed tests, their traces.
+
 ## What's automated
 
 | Test | Test cases | Required flow |
@@ -78,6 +84,7 @@ What each test checks, in short:
 ```
 conftest.py            fixtures: browser settings, cookie consent, pop-up handling, screenshot on failure
 pytest.ini             base URL, report and trace options
+.github/workflows/     GitHub Actions workflow (manual trigger only)
 requirements.txt       exact package versions
 pages/                 page objects: one class per page or component, holding its selectors
   header.py            header cart link and its item count
@@ -131,5 +138,4 @@ Tests only describe *what* happens ("add the first available product", "check th
 - **CAT-03 brand filter:** pick a brand from the live filter list, check every result's `data-ga_brand` matches, and that the filter survives a reload.
 - **Stretch cases from TEST_CASES.md:** CART-03 (remove one of two items), ADD-03 (no duplicates), CAT-05 (price sort order), CAT-02 (empty search), PDP-02 (discount maths on the buy page).
 - **Network checks:** wait for the Commerce Layer order response (`GET /api/orders/<id>`) and compare its line items and totals with what the cart page shows.
-- **CI:** a GitHub Actions workflow, manual trigger only, uploading the HTML report and traces as artifacts.
 - **Mobile viewport** for the cart-only tests, and a **second browser** (Firefox or WebKit).
