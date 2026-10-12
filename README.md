@@ -60,6 +60,8 @@ The workflow in [.github/workflows/tests.yml](.github/workflows/tests.yml) runs 
 
 It **only runs when started by hand**, never on push or on a schedule, because the tests use the live store. To start it: open the repository's **Actions** tab, choose **Store tests**, then **Run workflow**. When it finishes, download the **test-report** artifact from the run's page. It holds `reports/report.html` and, for failed tests, their traces.
 
+A manual run on 12 October 2026 passed all 6 tests on a clean GitHub runner, which also confirms the setup steps above work from scratch. Times in a CI report are in UTC, the runner's time zone.
+
 ## What's automated
 
 | Test | Test cases | Required flow |
