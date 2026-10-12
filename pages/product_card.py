@@ -16,6 +16,11 @@ class ProductCard:
     def sku(self):
         return self.root.get_attribute("data-testid")
 
+    def brand(self):
+        # The franchise the product belongs to, e.g. "Age of Wonders". It matches
+        # the names of the Brand checkboxes in the filter.
+        return self.root.get_attribute("data-ga_brand")
+
     def current_price(self):
         return parse_money(self.prices.first.inner_text())
 

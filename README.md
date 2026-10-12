@@ -29,7 +29,7 @@ The virtual environment (`.venv`) keeps the project's packages separate from the
 ## Running the tests
 
 ```bash
-pytest                          # all tests, about 30 seconds
+pytest                          # all tests, about 40 seconds
 pytest -v                       # one line per test, with its name
 pytest tests/test_cart.py       # one file
 pytest -k cart01                # tests whose name contains "cart01"
@@ -60,13 +60,14 @@ The workflow in [.github/workflows/tests.yml](.github/workflows/tests.yml) runs 
 
 It **only runs when started by hand**, never on push or on a schedule, because the tests use the live store. To start it: open the repository's **Actions** tab, choose **Store tests**, then **Run workflow**. When it finishes, download the **test-report** artifact from the run's page. It holds `reports/report.html` and, for failed tests, their traces.
 
-A manual run on 12 October 2026 passed all 6 tests on a clean GitHub runner, which also confirms the setup steps above work from scratch. Times in a CI report are in UTC, the runner's time zone.
+A manual run on 12 October 2026 passed all tests on a clean GitHub runner (the 6 that existed then; CAT-03 was added afterwards), which also confirms the setup steps above work from scratch. Times in a CI report are in UTC, the runner's time zone.
 
 ## What's automated
 
 | Test | Test cases | Required flow |
 |---|---|---|
 | `test_flow1_search_then_add_from_the_buy_page` | CAT-01, PDP-01, ADD-02 | 1. Find a product with search, add it to the cart |
+| `test_cat03_brand_filter_shows_only_that_brand_and_survives_a_reload` | CAT-03 | 1. (the filter side of "search or a filter") |
 | `test_add01_adding_from_a_tile_updates_the_header_counter` | ADD-01 | 2. Header cart counter updates |
 | `test_cart01_summary_adds_up_and_checkout_is_available` | CART-01 | 3. Subtotal − discount = total |
 | `test_cart02_removing_the_only_item_shows_the_empty_cart` | CART-02 | 4. Remove an item, empty state |
@@ -76,6 +77,7 @@ A manual run on 12 October 2026 passed all 6 tests on a clean GitHub runner, whi
 What each test checks, in short:
 
 - **Flow 1:** searches with a word taken from a live product title; the URL holds the search and every result contains the word. Opens a result's info page, follows its "Buy now", checks the buy page shows price, platform and an enabled Add to cart, with the same price as the listing. Adds it: the button becomes a disabled "Added to cart", the header shows 1, and the cart holds exactly that product at that price.
+- **CAT-03:** takes the brand of a buyable product, ticks it in the Filter sidebar, and checks the checkbox is ticked, the URL holds the filter, and every result belongs to that brand (from each tile's brand data, not its title). After a reload the filter is still in the URL and the same products are shown in the same order.
 - **ADD-01:** adds an On sale item from its listing tile; the header goes from "View cart" to "View cart, 1 item" without a reload.
 - **CART-01:** with one discounted and one full-price item: subtotal = sum of original prices, discount = total savings (shown negative), total = subtotal − discount = sum of current prices, one currency throughout, and "Proceed to checkout" is visible and enabled.
 - **CART-02:** removing the only item shows "Your cart is empty" with its message and "Go to all games" link, hides the summary and checkout, and resets the header.
@@ -137,7 +139,6 @@ Tests only describe *what* happens ("add the first available product", "check th
 
 ## What I'd add next
 
-- **CAT-03 brand filter:** pick a brand from the live filter list, check every result's `data-ga_brand` matches, and that the filter survives a reload.
 - **Stretch cases from TEST_CASES.md:** CART-03 (remove one of two items), ADD-03 (no duplicates), CAT-05 (price sort order), CAT-02 (empty search), PDP-02 (discount maths on the buy page).
 - **Network checks:** wait for the Commerce Layer order response (`GET /api/orders/<id>`) and compare its line items and totals with what the cart page shows.
 - **Mobile viewport** for the cart-only tests, and a **second browser** (Firefox or WebKit).

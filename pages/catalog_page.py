@@ -20,6 +20,8 @@ class CatalogPage:
         self.results_summary = page.get_by_text(re.compile(r"^Showing \d+ of \d+$"))
         # The box has no visible label; its accessible name comes from the placeholder "Search".
         self.search_box = page.get_by_role("searchbox", name="Search")
+        # On desktop, "Filter" opens a sidebar of checkboxes (Brand, Product type, ...).
+        self.filter_button = page.get_by_role("button", name="Filter", exact=True)
 
     def open_all_games(self):
         open_url(self.page, self.ALL_GAMES_URL)
@@ -59,3 +61,26 @@ class CatalogPage:
         product_name = card.title.inner_text()
         card.add_to_cart()
         return product_name
+
+    def brand_checkbox(self, brand):
+        return self.page.get_by_role("checkbox", name=brand, exact=True)
+
+    def filter_by_brand(self, brand):
+        """Open the filter sidebar and tick one brand.
+
+        Call this once the page is ready (for example after first_card_with_add_to_cart):
+        a click on Filter before the page's scripts have started is ignored.
+        """
+        self.filter_button.click()
+        # The real checkbox is visually hidden; what you see and click is a "pill"
+        # label drawn on top of it, inside the same group.
+        pill = self.page.get_by_role("group").filter(has=self.brand_checkbox(brand)).get_by_text(brand, exact=True)
+        pill.click()
+
+    def cards_not_of_brand(self, brand):
+        """Product tiles whose brand is anything other than `brand` (should be none after filtering)."""
+        return self.page.locator(f'li[data-testid]:not([data-ga_brand="{brand}"])')
+
+    def skus(self):
+        """SKUs of the tiles currently shown, in order."""
+        return [card.get_attribute("data-testid") for card in self.product_cards.all()]
