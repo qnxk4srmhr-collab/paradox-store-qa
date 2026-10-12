@@ -1,6 +1,8 @@
 import pytest
 
+from utils.age_gate import pass_age_gate_when_shown
 from utils.cookie_banner import decline_cookies, decline_cookies_when_shown
+from utils.navigation import open_url
 
 
 @pytest.fixture(scope="session")
@@ -17,7 +19,7 @@ def cookie_consent(browser, base_url):
     """
     context = browser.new_context(locale="en-US")
     page = context.new_page()
-    page.goto(f"{base_url}/our-games/all-games")
+    open_url(page, f"{base_url}/our-games/all-games")
     decline_cookies(page)
     consent_cookies = [c for c in context.cookies() if c["name"].startswith("Optanon")]
     context.close()
@@ -42,6 +44,11 @@ def browser_context_args(browser_context_args, cookie_consent):
 
 
 @pytest.fixture(autouse=True)
-def handle_cookie_banner(page):
-    """Runs before every test: decline the banner if it still shows up for any reason."""
+def handle_popups(page):
+    """Runs before every test.
+
+    Declines the cookie banner if it still shows up for any reason, and gets past
+    the age gate with an adult date of birth if an age-restricted product asks.
+    """
     decline_cookies_when_shown(page)
+    pass_age_gate_when_shown(page)

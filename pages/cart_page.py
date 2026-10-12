@@ -1,4 +1,5 @@
 from utils.money import MONEY_PATTERN, parse_money
+from utils.navigation import open_url
 
 
 class CartLine:
@@ -39,7 +40,7 @@ class CartPage:
         self.go_to_all_games_link = self.main.get_by_role("link", name="Go to all games")
 
     def open(self):
-        self.page.goto(self.URL)
+        open_url(self.page, self.URL)
 
     def remove_button(self, product_name):
         # The product name arrives a moment after the line itself (the button briefly

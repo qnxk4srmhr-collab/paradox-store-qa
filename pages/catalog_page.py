@@ -1,6 +1,7 @@
 import re
 
 from pages.product_card import ProductCard
+from utils.navigation import open_url
 
 
 class CatalogPage:
@@ -14,14 +15,21 @@ class CatalogPage:
         # Each product tile is an <li> whose data-testid is the product's SKU.
         # That attribute is meant for tests, so it's more stable than the generated class names.
         self.product_cards = page.locator("li[data-testid]")
+        self.product_titles = self.product_cards.get_by_role("heading")
         # "Showing 20 of 446"
         self.results_summary = page.get_by_text(re.compile(r"^Showing \d+ of \d+$"))
+        # The box has no visible label; its accessible name comes from the placeholder "Search".
+        self.search_box = page.get_by_role("searchbox", name="Search")
 
     def open_all_games(self):
-        self.page.goto(self.ALL_GAMES_URL)
+        open_url(self.page, self.ALL_GAMES_URL)
 
     def open_on_sale(self):
-        self.page.goto(self.ON_SALE_URL)
+        open_url(self.page, self.ON_SALE_URL)
+
+    def search(self, term):
+        # Results update as you type (no Enter needed) and the term is added to the URL.
+        self.search_box.fill(term)
 
     def first_card_with_add_to_cart(self, full_price_only=False):
         """Pick the first tile that has an "Add to cart" button, whatever product it is today.
