@@ -149,7 +149,7 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 
 **Expected:** a warning that Heavy Metal is already included in the Season Pass, or the store prevents the overlap.
 
-**Actual:** both items are in the cart with no warning. Subtotal 58.74 GBP, total 46.18 GBP.
+**Actual:** both items are in the cart with no warning, and the player pays for Heavy Metal twice.
 
 **Notes:** players have reported a similar problem with Paradox bundles on Steam (Paradox forum, May 2024: "Steam Ultimate Bundle shows content I already own").
 

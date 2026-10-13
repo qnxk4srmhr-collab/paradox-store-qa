@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from decimal import Decimal
 
-# Prices as the store shows them: "19.99 EUR", "-14.99 EUR", "1,299.00 GBP".
+# Prices as the store shows them: "19.99 EUR", "-14.99 EUR", "1,299.00 EUR".
 MONEY_PATTERN = re.compile(r"^-?[\d,]+\.\d{2} [A-Z]{3}$")
 
 # Totals may be rounded differently from the sum of rounded line prices,
