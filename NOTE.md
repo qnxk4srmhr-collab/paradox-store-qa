@@ -1,6 +1,6 @@
 # Note: assumptions, what I'd test next, bugs found
 
-Gerry, QA take-home for Paradox Tinto, 11–12 October 2026.
+QA take-home for Paradox Tinto, 11–13 October 2026.
 Details are in [TEST_CASES.md](TEST_CASES.md) (test scenarios), [BUGS.md](BUGS.md) (bug reports) and [README.md](README.md) (automation: setup, how to run, design decisions).
 
 **Automation in short:** 7 Playwright tests (Python, pytest) covering the 5 required flows plus a brand filter test, with page objects, an HTML report with screenshots, and traces on failure. A GitHub Actions workflow runs the suite on a clean machine, started by hand only because it uses the live store, and has passed there.
@@ -18,7 +18,7 @@ Details are in [TEST_CASES.md](TEST_CASES.md) (test scenarios), [BUGS.md](BUGS.m
 
 ## What I'd test next with more time
 
-1. **Raw localization keys everywhere.** Three turned up in two days (BUG-02, BUG-03, BUG-10). I'd add a build-time check that every key the code uses exists in the translation files, plus a UI scan of messages, toasts and gates in each store language.
+1. **A wider check for untranslated text.** Three raw localization keys turned up in two days (BUG-02, BUG-03, BUG-10), so there may be more in screens I didn't reach. I'd add a build-time check that every key the code uses exists in the translation files, plus a UI scan of messages, toasts and gates in each store language.
 2. **BUG-09 (cart losing an item).** Reproduce it with network throttling, ideally on a staging environment, and add network-level checks that compare the Commerce Layer order with what the cart page shows.
 3. **Regions and currency.** Run the cart tests from several regions (VPN or a proxy per region), including switching region mid-session and making sure cheaper-region prices can't be carried over.
 4. **Age ratings by region:** the gate's minimum age and the rating shown on the product page and in the cart, for PEGI, USK and ESRB regions.
