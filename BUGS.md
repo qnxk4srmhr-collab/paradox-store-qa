@@ -40,7 +40,7 @@
 ---
 
 ## BUG-02: Invalid promo code error shows a raw localization key
-**Severity:** Medium. The only feedback a player gets is partly untranslated developer text, which looks broken and unprofessional on a live store. The same key shows in Chinese (beta), the store's only other language, so the title string is missing from the localization files for every language.
+**Severity:** Medium. The only feedback a player gets is partly untranslated developer text, so it's unclear why the code was rejected. The same key shows in Chinese (beta), the store's only other language, so every store language is affected.
 
 **Steps to reproduce**
 1. Add any item to the cart and open `/our-games/cart`.
@@ -66,7 +66,6 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 - **Terminology:** the toast says "voucher" while the field says "promo code". The UI should use one term.
 - **Placement:** the toast is small and far from the field, and disappears after a few seconds, so it's easy to miss.
 - **No Apply button:** pressing Enter is the only way to submit a code, and nothing on the page says so.
-- **Label:** the field label is "Promo Code*". The asterisk usually means "required", which this field isn't.
 - **To check:** whether the toast is announced to screen readers.
 - **Cause (from the store's own translation data):** the English title exists, as `Cart.toast.invalid_voucher` = "Invalid voucher". The page asks for it under a different path, gets nothing, and shows the key instead. So the fix is in the lookup, not in the translation files.
 - **Hardcoded label:** the field's "Promo Code" label is written directly in the page's script instead of coming from the translation files, so it stays in English in every store language.
