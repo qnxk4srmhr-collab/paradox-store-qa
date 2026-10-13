@@ -128,12 +128,12 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 ---
 
 ## BUG-06: All tile "Add to cart" buttons share the same accessible name
-**Severity:** Low. A screen-reader user hears a list of identical "Add to cart" buttons and can't tell which product each belongs to (WCAG 2.4.6 / 2.5.3).
+**Severity:** Low. A screen-reader user hears a list of identical "Add to cart" buttons and can't tell which product each belongs to (WCAG 2.4.6 Headings and Labels).
 
 **Steps to reproduce**
 1. Open `/our-games/all-games` and inspect the accessibility tree (or use a screen reader's buttons list).
 
-**Expected:** each button includes the product, for example "Add BATTLETECH - Heavy Metal to cart". The cart page already does this well: "Remove BATTLETECH - Heavy Metal from cart".
+**Expected:** each button's accessible name includes the product, while keeping the visible words so voice control still works (WCAG 2.5.3 Label in Name), for example "Add to cart: BATTLETECH - Heavy Metal". The cart page already names its icon-only remove buttons this way: "Remove BATTLETECH - Heavy Metal from cart".
 
 **Actual:** every button is named "Add to cart".
 
