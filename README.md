@@ -68,21 +68,21 @@ A manual run on 12 October 2026 passed all 7 tests on a clean GitHub runner, whi
 | Test | Test cases | Required flow |
 |---|---|---|
 | `test_flow1_search_then_add_from_the_buy_page` | CAT-01, PDP-01, ADD-02 | 1. Find a product with search, add it to the cart |
-| `test_cat03_brand_filter_shows_only_that_brand_and_survives_a_reload` | CAT-03 | 1. (the filter side of "search or a filter") |
 | `test_add01_adding_from_a_tile_updates_the_header_counter` | ADD-01 | 2. Header cart counter updates |
 | `test_cart01_summary_adds_up_and_checkout_is_available` | CART-01 | 3. Subtotal − discount = total |
 | `test_cart02_removing_the_only_item_shows_the_empty_cart` | CART-02 | 4. Remove an item, empty state |
 | `test_cart04_cart_contents_persist_after_reload_and_navigation` | CART-04 | 5. Cart persists after reload |
+| `test_cat03_brand_filter_shows_only_that_brand_and_survives_a_reload` | CAT-03 | Extra: the filter alternative in flow 1 (Flow 1 itself uses search) |
 | `test_store_opens_with_an_empty_cart` | (smoke) | Quick check that the store and setup work |
 
 What each test checks, in short:
 
 - **Flow 1:** searches with a word taken from a live product title; the URL holds the search and every result contains the word. Opens a result's info page, follows its "Buy now", checks the buy page shows price, platform and an enabled Add to cart, with the same price as the listing. Adds it: the button becomes a disabled "Added to cart", the header shows 1, and the cart holds exactly that product at that price.
-- **CAT-03:** takes the brand of a buyable product, ticks it in the Filter sidebar, and checks the checkbox is ticked, the URL holds the filter, and every result belongs to that brand (from each tile's brand data, not its title). After a reload the filter is still in the URL and the same products are shown in the same order.
 - **ADD-01:** adds an On sale item from its listing tile; the header goes from "View cart" to "View cart, 1 item" without a reload.
 - **CART-01:** with one discounted and one full-price item: subtotal = sum of original prices, discount = total savings (shown negative), total = subtotal − discount = sum of current prices, one currency throughout, and "Proceed to checkout" is visible and enabled.
 - **CART-02:** removing the only item shows "Your cart is empty" with its message and "Go to all games" link, hides the summary and checkout, and resets the header.
 - **CART-04:** after a reload, and after leaving through "Continue shopping" and returning through the header cart link, the same items, subtotal, total and header count are shown.
+- **CAT-03:** takes the brand of a buyable product, ticks it in the Filter sidebar, and checks the checkbox is ticked, the URL holds the filter, and every result belongs to that brand (from each tile's brand data, not its title). After a reload the filter is still in the URL and the same products are shown in the same order.
 
 ## Project structure
 
