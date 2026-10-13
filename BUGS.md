@@ -10,7 +10,7 @@
 | BUG-02 | Invalid promo code error shows a raw localization key | Bug / Localization | Medium |
 | BUG-03 | Age gate refusal shows a raw localization key | Bug / Localization | Medium |
 | BUG-04 | Tile "Add to cart" can't be reached with the keyboard | Accessibility | Medium |
-| BUG-05 | No tile "Add to cart" on narrow or mobile screens | UX | Low |
+| BUG-05 | No tile "Add to cart" on narrow screens, including phones in portrait | UX | Low |
 | BUG-06 | All tile "Add to cart" buttons share the same accessible name | Accessibility | Low |
 | BUG-07 | No warning when cart items overlap (season pass plus included add-on) | UX | Low |
 | BUG-08 | Minor polish issues | Polish | Trivial |
@@ -105,20 +105,25 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 
 **Actual:** focus moves from tile to tile (each tile is a link), but never reaches an "Add to cart" button. The button only appears while the mouse is over the tile; otherwise its container is `display: none`, so it can't receive focus. Same result on All games (20 of 20 tiles) and On sale (16 of 16).
 
-**Notes:** if the mouse pointer happens to rest over a tile, that tile's button is shown and Tab can reach it, but only for that one tile. That's why the button sometimes seems reachable; a keyboard user can't rely on it. A common fix is to also show the button when the tile has keyboard focus (CSS `:focus-within`).
+**Notes:** if the mouse pointer happens to rest over a tile, that tile's button is shown and Tab can reach it, but only for that one tile. That's why the button sometimes seems reachable; a keyboard user can't rely on it. A common fix is to also show the button when the tile has keyboard focus (CSS `:focus-within`); today the stylesheet only shows it on `:hover` (see BUG-05).
 
 ---
 
-## BUG-05: No tile "Add to cart" on narrow or mobile screens
+## BUG-05: No tile "Add to cart" on narrow screens, including phones in portrait
 **Severity:** Low. Mobile shoppers need extra taps (card, then Buy now, then Add to cart). Possibly a design choice; worth confirming with the team.
 
 **Steps to reproduce**
-1. Open `/our-games/on-sale` in a window about 580 px wide, or on a phone.
-2. Tap or hover over a single-price product card.
+1. Open `/our-games/on-sale` on a phone held in **portrait**, or in a desktop window less than 640 px wide.
+2. Tap, or press and hold, a single-price product card.
+3. Turn the phone to **landscape** (or widen the window past 640 px) and press and hold the same card.
 
-**Expected:** a way to add the item from the card, as on desktop.
+**Expected:** a way to add the item from the card in both orientations, as on desktop.
 
-**Actual:** the "Add to cart" button is hidden (`display: none`) and doesn't appear on hover or tap.
+**Actual:** in portrait (under 640 px) the "Add to cart" button never appears. In landscape it appears when the card is pressed and held, because the phone then gets the desktop layout and treats the long press as a hover.
+
+**Cause (from the site's stylesheet):** the button's container is always `display: none`, and the only rule that shows it is `@media screen and (min-width: 640px) { .product-card:hover .buy-container { display: block } }`. Below 640 px nothing can show it. The same rule explains BUG-04: only mouse hover shows the button, never keyboard focus.
+
+**Notes:** relying on hover also makes the landscape behaviour hard to discover; most shoppers won't think to press and hold a card.
 
 ---
 

@@ -35,7 +35,7 @@ The full lists are in [TEST_CASES.md](TEST_CASES.md#what-id-test-next-with-more-
 | BUG-02 | Invalid promo code shows the raw key `toast.invalid_voucher` (the translation exists; the lookup is wrong) | Medium |
 | BUG-03 | Age gate refusal shows the raw key `General.ageGate.sorry` (no translation exists) | Medium |
 | BUG-04 | Tile "Add to cart" can't be reached with the keyboard | Medium |
-| BUG-05 | No tile "Add to cart" on narrow or mobile screens | Low |
+| BUG-05 | No tile "Add to cart" on screens under 640 px wide, including phones in portrait | Low |
 | BUG-06 | All tile "Add to cart" buttons share the same accessible name | Low |
 | BUG-07 | No warning when cart items overlap (season pass plus an add-on it includes) | Low |
 | BUG-08 | Minor polish: cart page title, label casing, trailing space in product data | Trivial |
