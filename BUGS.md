@@ -97,12 +97,15 @@ The field is also cleared, so the player has to retype the whole code to fix a t
 **Severity:** Medium. Keyboard and assistive-technology users can't use quick add from the listings (WCAG 2.1.1 Keyboard). They can still add from the buy page.
 
 **Steps to reproduce**
-1. Open `/our-games/on-sale` on a desktop browser.
-2. Using only the **Tab** key, move through the first product card that has a single price.
+1. Open `/our-games/all-games` or `/our-games/on-sale` on a desktop browser.
+2. Move the mouse pointer off the product tiles (for example onto the header) and leave it there.
+3. Using only the **Tab** key, move through the product tiles. In Safari, use **Option+Tab**, or turn on Settings → Advanced → "Press Tab to highlight each item on a webpage"; by default Safari's Tab skips links.
 
-**Expected:** focus reaches the card's "Add to cart" button and Enter adds the item.
+**Expected:** focus reaches each single-price tile's "Add to cart" button, and Enter adds the item.
 
-**Actual:** focus never reaches the button. It only appears on mouse hover; otherwise its container is `display: none`, so it can't receive focus.
+**Actual:** focus moves from tile to tile (each tile is a link), but never reaches an "Add to cart" button. The button only appears while the mouse is over the tile; otherwise its container is `display: none`, so it can't receive focus. Same result on All games (20 of 20 tiles) and On sale (16 of 16).
+
+**Notes:** if the mouse pointer happens to rest over a tile, that tile's button is shown and Tab can reach it, but only for that one tile. That's why the button sometimes seems reachable; a keyboard user can't rely on it. A common fix is to also show the button when the tile has keyboard focus (CSS `:focus-within`).
 
 ---
 
